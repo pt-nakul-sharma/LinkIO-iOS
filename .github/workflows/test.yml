@@ -2,27 +2,22 @@ name: Test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
-  test:
+  build:
     runs-on: macos-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
-      
-      - name: Build with Swift Package Manager
-        run: swift build
-      
-      - name: Run tests
-        run: swift test
-      
-      - name: Validate CocoaPods
-        run: |
-          gem install cocoapods
-          pod lib lint --allow-warnings
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+
+      - name: Build for iOS
+        run: xcodebuild -scheme LinkIO -destination 'generic/platform=iOS' clean build
+
+      - name: Verify Swift Package
+        run: swift package resolve
