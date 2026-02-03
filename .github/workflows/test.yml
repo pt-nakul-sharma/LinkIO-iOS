@@ -1,0 +1,28 @@
+name: Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
+      
+      - name: Build with Swift Package Manager
+        run: swift build
+      
+      - name: Run tests
+        run: swift test
+      
+      - name: Validate CocoaPods
+        run: |
+          gem install cocoapods
+          pod lib lint --allow-warnings
