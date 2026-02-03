@@ -103,21 +103,13 @@ LinkIO.shared.setDeepLinkHandler { deepLink in
     print("Params: \(deepLink.params)")
     print("Deferred: \(deepLink.isDeferred)")
 
-    // Handle different link types
-    if let type = deepLink.params["type"] {
-        switch type {
-        case "referral":
-            let code = deepLink.params["code"]
-            // Handle referral
-        case "profile":
-            let userId = deepLink.params["userId"]
-            // Show user profile
-        case "product":
-            let productId = deepLink.params["productId"]
-            // Show product
-        default:
-            break
-        }
+    // Handle params directly - no "type" field needed
+    if let referralCode = deepLink.params["referralCode"] {
+        // Handle referral
+    } else if let userId = deepLink.params["userId"] {
+        // Show user profile
+    } else if let carId = deepLink.params["carId"] {
+        // Show car details (Ejaro)
     }
 }
 ```
@@ -127,9 +119,9 @@ LinkIO.shared.setDeepLinkHandler { deepLink in
 Use a generic `/link` endpoint with query params:
 
 ```
-https://yourdomain.com/link?type=referral&code=ABC123
-https://yourdomain.com/link?type=profile&userId=456
-https://yourdomain.com/link?type=product&productId=789
+https://rokart.in/link?referralCode=ABC123
+https://speekfeed.in/link?userId=456
+https://ejaro.com/link?carId=789
 ```
 
 ## 📚 API Reference
