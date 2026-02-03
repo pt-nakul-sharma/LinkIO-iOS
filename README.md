@@ -132,7 +132,7 @@ LinkIO.shared.checkPendingLink()
 
 ## 📄 License
 
-MIT © [Nakul Sharma](https://github.com/pt-nakul-sharma)
+MIT
 
 ## 🤝 Contributing
 
