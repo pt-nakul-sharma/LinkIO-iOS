@@ -1,6 +1,7 @@
 # LinkIO iOS
 
 [![Swift Package Manager](https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg)](https://swift.org/package-manager/)
+[![CocoaPods](https://img.shields.io/badge/CocoaPods-compatible-brightgreen.svg)](https://cocoapods.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/platform-iOS%2013.0+-blue.svg)](https://developer.apple.com/ios/)
 
@@ -23,6 +24,26 @@ Self-hosted deep linking SDK for iOS. Open-source alternative to Branch.io.
 dependencies: [
     .package(url: "https://github.com/pt-nakul-sharma/LinkIO-iOS.git", from: "1.0.0")
 ]
+```
+
+### CocoaPods
+
+Add to your `Podfile`:
+
+```ruby
+pod 'LinkIO', :git => 'https://github.com/pt-nakul-sharma/LinkIO-iOS.git', :tag => '1.0.0'
+```
+
+Or for the latest version:
+
+```ruby
+pod 'LinkIO', :git => 'https://github.com/pt-nakul-sharma/LinkIO-iOS.git'
+```
+
+Then run:
+
+```bash
+pod install
 ```
 
 ## 📱 Quick Start
