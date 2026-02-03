@@ -128,11 +128,11 @@ LinkIO.shared.checkPendingLink()
 
 - iOS 13.0+
 - Swift 5.0+
-- Xcode 14.0+
+- Xcode 15.0+
 
 ## 📄 License
 
-MIT © [Your Name]
+MIT © [Nakul Sharma](https://github.com/pt-nakul-sharma)
 
 ## 🤝 Contributing
 
