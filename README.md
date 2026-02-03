@@ -57,11 +57,15 @@ import LinkIO
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    // Configure your backend URL with API version
+    let apiVersion = "api/v1/"  // Match your backend route structure
+    let baseURL = "https://api.yourdomain.com/"
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         let config = LinkIOConfig(
             domain: "yourdomain.com",
-            backendURL: "https://yourdomain.com"
+            backendURL: baseURL + apiVersion  // Full path: https://api.yourdomain.com/api/v1/
         )
         LinkIO.shared.configure(config: config)
 
@@ -106,12 +110,18 @@ LinkIO.shared.setDeepLinkHandler { deepLink in
 ### Configuration
 
 ```swift
+// backendURL should include the full API path
+// SDK appends: pending-link/, track-referral
 let config = LinkIOConfig(
     domain: "yourdomain.com",
-    backendURL: "https://yourdomain.com",
+    backendURL: "https://api.yourdomain.com/api/v1/",  // Trailing slash required
     autoCheckPendingLinks: true
 )
 LinkIO.shared.configure(config: config)
+
+// SDK will call:
+// - https://api.yourdomain.com/api/v1/pending-link/:deviceId
+// - https://api.yourdomain.com/api/v1/track-referral
 ```
 
 ### Handle Universal Links
