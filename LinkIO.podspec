@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'LinkIO'
-  s.version          = '1.0.0'
+  s.version          = '1.1.0'
   s.summary          = 'Self-hosted deep linking SDK for iOS'
   s.description      = <<-DESC
 LinkIO is a self-hosted deep linking solution that handles universal links and deferred deep linking for iOS applications.

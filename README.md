@@ -15,14 +15,14 @@ Self-hosted deep linking SDK for iOS. Open-source alternative to Branch.io.
 
 1. File → Add Packages...
 2. Enter: `https://github.com/pt-nakul-sharma/LinkIO-iOS.git`
-3. Select version rule: "Up to Next Major" starting from 1.0.0
+3. Select version rule: "Up to Next Major" starting from 1.1.0
 4. Click "Add Package"
 
 **In Package.swift:**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/pt-nakul-sharma/LinkIO-iOS.git", from: "1.0.0")
+    .package(url: "https://github.com/pt-nakul-sharma/LinkIO-iOS.git", from: "1.1.0")
 ]
 ```
 
@@ -31,7 +31,7 @@ dependencies: [
 Add to your `Podfile`:
 
 ```ruby
-pod 'LinkIO', :git => 'https://github.com/pt-nakul-sharma/LinkIO-iOS.git', :tag => '1.0.0'
+pod 'LinkIO', :git => 'https://github.com/pt-nakul-sharma/LinkIO-iOS.git', :tag => '1.1.0'
 ```
 
 Or for the latest version:
@@ -65,7 +65,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let config = LinkIOConfig(
             domain: "yourdomain.com",
-            backendURL: baseURL + apiVersion  // Full path: https://api.yourdomain.com/api/v1/
+            backendURL: baseURL + apiVersion,  // Full path: https://api.yourdomain.com/api/v1/
+            appScheme: "yourapp"  // Custom URL scheme (e.g., yourapp://)
         )
         LinkIO.shared.configure(config: config)
 
@@ -134,6 +135,7 @@ https://ejaro.com/link?carId=789
 let config = LinkIOConfig(
     domain: "yourdomain.com",
     backendURL: "https://api.yourdomain.com/api/v1/",  // Trailing slash required
+    appScheme: "yourapp",  // Custom URL scheme (e.g., yourapp://)
     autoCheckPendingLinks: true
 )
 LinkIO.shared.configure(config: config)
@@ -168,7 +170,75 @@ LinkIO.shared.trackReferral(
 LinkIO.shared.checkPendingLink()
 ```
 
-## 🔗 Related Packages
+## 📲 Complete iOS Example
+
+**Complete AppDelegate setup:**
+
+```swift
+import UIKit
+import LinkIO
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        // Initialize LinkIO
+        let config = LinkIOConfig(
+            domain: "yourdomain.com",
+            backendURL: "https://api.yourdomain.com/api/v1/",
+            appScheme: "yourapp"  // Custom URL scheme (e.g., yourapp://)
+        )
+        LinkIO.shared.configure(config: config)
+
+        // Handle deep links
+        LinkIO.shared.setDeepLinkHandler { deepLink in
+            self.handleDeepLink(deepLink)
+        }
+
+        return true
+    }
+
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        guard let url = userActivity.webpageURL else { return false }
+        return LinkIO.shared.handleUniversalLink(url: url)
+    }
+
+    private func handleDeepLink(_ deepLink: DeepLinkData) {
+        // Navigate based on params
+        if let referralCode = deepLink.params["referralCode"] {
+            showReferralScreen(code: referralCode)
+        } else if let productId = deepLink.params["productId"] {
+            showProductDetails(id: productId)
+        } else if let userId = deepLink.params["userId"] {
+            showUserProfile(id: userId)
+        }
+    }
+}
+```
+
+**SwiftUI App setup:**
+
+```swift
+import SwiftUI
+import LinkIO
+
+@main
+struct MyApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .onOpenURL { url in
+                    LinkIO.shared.handleUniversalLink(url: url)
+                }
+        }
+    }
+}
+```
+
+## � Related Packages
 
 - **Backend**: [LinkIO-Backend](https://github.com/pt-nakul-sharma/LinkIO-Backend)
 - **Android**: [LinkIO-Android](https://github.com/pt-nakul-sharma/LinkIO-Android)
