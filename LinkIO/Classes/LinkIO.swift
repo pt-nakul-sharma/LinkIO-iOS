@@ -65,6 +65,47 @@ public class LinkIO {
     public func checkPendingLink() {
         guard let config = config else { return }
 
+        // Use fingerprint-based endpoint (IP matching) for deferred deep linking
+        // This works even when User-Agent differs between browser and app
+        let urlString = "\(config.backendURL)pending-link"
+
+        guard let url = URL(string: urlString) else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let self = self,
+                  let data = data,
+                  let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                // Fallback to deviceId-based endpoint
+                self?.checkPendingLinkByDeviceId()
+                return
+            }
+
+            do {
+                let decoder = JSONDecoder()
+                let deepLink = try decoder.decode(DeepLinkData.self, from: data)
+
+                DispatchQueue.main.async {
+                    if let handler = self.deepLinkHandler {
+                        handler(deepLink)
+                    } else {
+                        self.pendingDeepLink = deepLink
+                    }
+                }
+            } catch {
+                print("LinkIO: Failed to decode pending link - \(error)")
+                // Fallback to deviceId-based endpoint
+                self.checkPendingLinkByDeviceId()
+            }
+        }.resume()
+    }
+
+    private func checkPendingLinkByDeviceId() {
+        guard let config = config else { return }
+
         let deviceId = getDeviceId()
         let urlString = "\(config.backendURL)pending-link/\(deviceId)"
 
