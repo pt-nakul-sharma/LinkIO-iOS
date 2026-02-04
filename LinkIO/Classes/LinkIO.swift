@@ -24,10 +24,17 @@ public class LinkIO {
         }
     }
 
+    /// Handle Universal Links (https://domain.com/...) and custom URL schemes (appscheme://...)
     public func handleUniversalLink(url: URL) -> Bool {
         guard let config = config else { return false }
 
-        guard url.host == config.domain || url.host == "www.\(config.domain)" else {
+        // Check if it's a domain URL (Universal Link)
+        let isDomainURL = url.host == config.domain || url.host == "www.\(config.domain)"
+
+        // Check if it's an app scheme URL
+        let isAppSchemeURL = config.appScheme != nil && url.scheme == config.appScheme
+
+        guard isDomainURL || isAppSchemeURL else {
             return false
         }
 
@@ -51,6 +58,11 @@ public class LinkIO {
         }
 
         return true
+    }
+
+    /// Convenience method for handling app scheme URLs in AppDelegate
+    public func handleAppSchemeURL(url: URL) -> Bool {
+        return handleUniversalLink(url: url)
     }
 
     public func setDeepLinkHandler(_ handler: @escaping (DeepLinkData) -> Void) {
