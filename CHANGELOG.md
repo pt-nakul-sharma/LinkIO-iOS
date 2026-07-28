@@ -1,15 +1,21 @@
 # Changelog
 
-## [1.3.0] - 2026-07-28
+## [2.0.0] - 2026-07-28
+
+Swift 6 release. Requires Xcode 16+ / a Swift 6 toolchain. Consumers on older
+toolchains should stay on the 1.1.x line (which carries the same pending-link fix).
 
 ### Changed
 
-- Swift 6 language-mode compatibility: `LinkIO` is now `@MainActor`-isolated and
-  `DeepLinkData` / `LinkIOConfig` conform to `Sendable`, eliminating data-race
-  warnings under strict concurrency. Public API is unchanged.
-- Remains buildable on Swift 5.x toolchains — `Package.swift` stays at
-  `swift-tools-version:5.9` and podspec `swift_version` at `5.0`, so no Xcode upgrade
-  is required to adopt this release.
+- Swift 6 language mode: `LinkIO` is now `@MainActor`-isolated and `DeepLinkData` /
+  `LinkIOConfig` conform to `Sendable`, eliminating data races under strict concurrency.
+  Public API is unchanged.
+- `Package.swift` declares `swift-tools-version:6.0` and `swiftLanguageModes: [.v5, .v6]`;
+  podspec `swift_version` is `6.0`.
+
+### Requires
+
+- Xcode 16+ / Swift 6 toolchain.
 
 ## [1.1.1] - 2026-07-28
 
