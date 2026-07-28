@@ -83,30 +83,33 @@ public final class LinkIO {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        // `self` (the LinkIO singleton) is captured strongly: it is immortal, and a
+        // `@MainActor` class is `Sendable`, so it crosses into the completion handler and
+        // the main-actor hop safely on every toolchain.
+        URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data,
                   let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
                 // Fallback to deviceId-based endpoint
-                Task { @MainActor in self?.checkPendingLinkByDeviceId() }
+                Task { @MainActor in self.checkPendingLinkByDeviceId() }
                 return
             }
 
             // An empty / url-less 200 (e.g. `{}`) means "no pending link" — not an error.
             // Try the deviceId-based endpoint instead of logging a decode failure.
             if Self.isEmptyPendingLink(data) {
-                Task { @MainActor in self?.checkPendingLinkByDeviceId() }
+                Task { @MainActor in self.checkPendingLinkByDeviceId() }
                 return
             }
 
             do {
                 let decoder = JSONDecoder()
                 let deepLink = try decoder.decode(DeepLinkData.self, from: data)
-                Task { @MainActor in self?.deliver(deepLink) }
+                Task { @MainActor in self.deliver(deepLink) }
             } catch {
                 print("LinkIO: Failed to decode pending link - \(error)")
                 // Fallback to deviceId-based endpoint
-                Task { @MainActor in self?.checkPendingLinkByDeviceId() }
+                Task { @MainActor in self.checkPendingLinkByDeviceId() }
             }
         }.resume()
     }
@@ -140,7 +143,7 @@ public final class LinkIO {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
 
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data,
                   let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
@@ -153,7 +156,7 @@ public final class LinkIO {
             do {
                 let decoder = JSONDecoder()
                 let deepLink = try decoder.decode(DeepLinkData.self, from: data)
-                Task { @MainActor in self?.deliver(deepLink) }
+                Task { @MainActor in self.deliver(deepLink) }
             } catch {
                 print("LinkIO: Failed to decode pending link - \(error)")
             }
