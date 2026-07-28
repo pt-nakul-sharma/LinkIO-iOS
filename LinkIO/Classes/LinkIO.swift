@@ -1,7 +1,8 @@
 import Foundation
 import UIKit
 
-public class LinkIO {
+@MainActor
+public final class LinkIO {
     public static let shared = LinkIO()
 
     private var config: LinkIOConfig?
@@ -51,11 +52,7 @@ public class LinkIO {
             isDeferred: false
         )
 
-        if let handler = deepLinkHandler {
-            handler(deepLink)
-        } else {
-            pendingDeepLink = deepLink
-        }
+        deliver(deepLink)
 
         return true
     }
@@ -87,48 +84,49 @@ public class LinkIO {
         request.httpMethod = "GET"
 
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            guard let self = self,
-                  let data = data,
+            guard let data = data,
                   let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
                 // Fallback to deviceId-based endpoint
-                self?.checkPendingLinkByDeviceId()
+                Task { @MainActor in self?.checkPendingLinkByDeviceId() }
                 return
             }
 
             // An empty / url-less 200 (e.g. `{}`) means "no pending link" — not an error.
             // Try the deviceId-based endpoint instead of logging a decode failure.
             if Self.isEmptyPendingLink(data) {
-                self.checkPendingLinkByDeviceId()
+                Task { @MainActor in self?.checkPendingLinkByDeviceId() }
                 return
             }
 
             do {
                 let decoder = JSONDecoder()
                 let deepLink = try decoder.decode(DeepLinkData.self, from: data)
-
-                DispatchQueue.main.async {
-                    if let handler = self.deepLinkHandler {
-                        handler(deepLink)
-                    } else {
-                        self.pendingDeepLink = deepLink
-                    }
-                }
+                Task { @MainActor in self?.deliver(deepLink) }
             } catch {
                 print("LinkIO: Failed to decode pending link - \(error)")
                 // Fallback to deviceId-based endpoint
-                self.checkPendingLinkByDeviceId()
+                Task { @MainActor in self?.checkPendingLinkByDeviceId() }
             }
         }.resume()
     }
 
     /// True when the pending-link response carries no deep link (empty object or missing
     /// `url`), which the backend returns as HTTP 200 `{}` when nothing is waiting.
-    private static func isEmptyPendingLink(_ data: Data) -> Bool {
+    nonisolated private static func isEmptyPendingLink(_ data: Data) -> Bool {
         guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             return false
         }
         return object["url"] == nil
+    }
+
+    /// Deliver a decoded deep link to the registered handler, or hold it as pending.
+    private func deliver(_ deepLink: DeepLinkData) {
+        if let handler = deepLinkHandler {
+            handler(deepLink)
+        } else {
+            pendingDeepLink = deepLink
+        }
     }
 
     private func checkPendingLinkByDeviceId() {
@@ -143,8 +141,7 @@ public class LinkIO {
         request.httpMethod = "GET"
 
         URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            guard let self = self,
-                  let data = data,
+            guard let data = data,
                   let httpResponse = response as? HTTPURLResponse,
                   httpResponse.statusCode == 200 else {
                 return
@@ -156,14 +153,7 @@ public class LinkIO {
             do {
                 let decoder = JSONDecoder()
                 let deepLink = try decoder.decode(DeepLinkData.self, from: data)
-
-                DispatchQueue.main.async {
-                    if let handler = self.deepLinkHandler {
-                        handler(deepLink)
-                    } else {
-                        self.pendingDeepLink = deepLink
-                    }
-                }
+                Task { @MainActor in self?.deliver(deepLink) }
             } catch {
                 print("LinkIO: Failed to decode pending link - \(error)")
             }

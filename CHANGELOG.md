@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.0] - 2026-07-28
+
+### Changed
+
+- Swift 6 language-mode compatibility: `LinkIO` is now `@MainActor`-isolated and
+  `DeepLinkData` / `LinkIOConfig` conform to `Sendable`, eliminating data-race
+  warnings under strict concurrency. Public API is unchanged.
+- `Package.swift` now declares `swiftLanguageModes: [.v5, .v6]`; podspec `swift_version` is `6.0`.
+
 ## [1.1.1] - 2026-07-28
 
 ### Fixed

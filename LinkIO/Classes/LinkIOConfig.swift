@@ -1,6 +1,6 @@
 import Foundation
 
-public struct LinkIOConfig {
+public struct LinkIOConfig: Sendable {
     public let domain: String
     public let backendURL: String
     public let appScheme: String? // Custom URL scheme (e.g., "rokart" for rokart://)
