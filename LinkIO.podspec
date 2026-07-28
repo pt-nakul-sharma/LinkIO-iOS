@@ -11,7 +11,7 @@ Open-source alternative to Branch.io.
   s.author           = { 'Nakul Sharma' => 'nakul@rokart.in' }
   s.source           = { :git => 'https://github.com/pt-nakul-sharma/LinkIO-iOS.git', :tag => s.version.to_s }
   s.ios.deployment_target = '13.0'
-  s.swift_version = '6.0'
+  s.swift_version = '5.0'
   s.source_files = 'LinkIO/Classes/**/*'
   s.frameworks = 'UIKit', 'Foundation'
 end

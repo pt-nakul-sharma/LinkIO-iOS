@@ -15,14 +15,14 @@ Self-hosted deep linking SDK for iOS. Open-source alternative to Branch.io.
 
 1. File → Add Packages...
 2. Enter: `https://github.com/pt-nakul-sharma/LinkIO-iOS.git`
-3. Select version rule: "Up to Next Major" starting from 1.1.0
+3. Select version rule: "Up to Next Major" starting from 1.3.0
 4. Click "Add Package"
 
 **In Package.swift:**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/pt-nakul-sharma/LinkIO-iOS.git", from: "1.1.0")
+    .package(url: "https://github.com/pt-nakul-sharma/LinkIO-iOS.git", from: "1.3.0")
 ]
 ```
 
@@ -31,7 +31,7 @@ dependencies: [
 Add to your `Podfile`:
 
 ```ruby
-pod 'LinkIO', :git => 'https://github.com/pt-nakul-sharma/LinkIO-iOS.git', :tag => '1.1.0'
+pod 'LinkIO', :git => 'https://github.com/pt-nakul-sharma/LinkIO-iOS.git', :tag => '1.3.0'
 ```
 
 Or for the latest version:
@@ -247,8 +247,14 @@ struct MyApp: App {
 ## 🛠️ Requirements
 
 - iOS 13.0+
-- Swift 5.0+
+- Swift 5.0+ (Swift 6 language mode compatible)
 - Xcode 15.0+
+
+> **Concurrency:** As of 1.3.0, `LinkIO` is `@MainActor`-isolated and `DeepLinkData` /
+> `LinkIOConfig` are `Sendable`, so the SDK builds cleanly under Swift 6 strict concurrency.
+> The public API is unchanged — call it from the main thread as before (AppDelegate/SceneDelegate
+> and SwiftUI view callbacks already run there). The package still resolves on Swift 5.x
+> toolchains, so no Xcode upgrade is required.
 
 ## 📄 License
 

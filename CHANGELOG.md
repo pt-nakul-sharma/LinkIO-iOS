@@ -7,7 +7,9 @@
 - Swift 6 language-mode compatibility: `LinkIO` is now `@MainActor`-isolated and
   `DeepLinkData` / `LinkIOConfig` conform to `Sendable`, eliminating data-race
   warnings under strict concurrency. Public API is unchanged.
-- `Package.swift` now declares `swiftLanguageModes: [.v5, .v6]`; podspec `swift_version` is `6.0`.
+- Remains buildable on Swift 5.x toolchains — `Package.swift` stays at
+  `swift-tools-version:5.9` and podspec `swift_version` at `5.0`, so no Xcode upgrade
+  is required to adopt this release.
 
 ## [1.1.1] - 2026-07-28
 
