@@ -1,6 +1,6 @@
 import Foundation
 
-public struct DeepLinkData: Codable {
+public struct DeepLinkData: Codable, Sendable {
     public let url: String
     public let params: [String: String]
     public let isDeferred: Bool

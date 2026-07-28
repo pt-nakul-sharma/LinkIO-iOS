@@ -15,23 +15,27 @@ Self-hosted deep linking SDK for iOS. Open-source alternative to Branch.io.
 
 1. File → Add Packages...
 2. Enter: `https://github.com/pt-nakul-sharma/LinkIO-iOS.git`
-3. Select version rule: "Up to Next Major" starting from 1.1.0
+3. Select version rule: "Up to Next Major" starting from 2.0.0
 4. Click "Add Package"
 
 **In Package.swift:**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/pt-nakul-sharma/LinkIO-iOS.git", from: "1.1.0")
+    .package(url: "https://github.com/pt-nakul-sharma/LinkIO-iOS.git", from: "2.0.0")
 ]
 ```
+
+> **Using an older toolchain?** 2.0.0 requires Xcode 16 / Swift 6. On Xcode 15 or
+> earlier, pin to the 1.1.x line — it carries the same pending-link fix:
+> `.package(url: "...", "1.1.1"..<"2.0.0")`.
 
 ### CocoaPods
 
 Add to your `Podfile`:
 
 ```ruby
-pod 'LinkIO', :git => 'https://github.com/pt-nakul-sharma/LinkIO-iOS.git', :tag => '1.1.0'
+pod 'LinkIO', :git => 'https://github.com/pt-nakul-sharma/LinkIO-iOS.git', :tag => '2.0.0'
 ```
 
 Or for the latest version:
@@ -246,9 +250,16 @@ struct MyApp: App {
 
 ## 🛠️ Requirements
 
-- iOS 13.0+
-- Swift 5.0+
-- Xcode 15.0+
+| LinkIO | iOS | Swift | Xcode |
+| --- | --- | --- | --- |
+| **2.0.x** | 13.0+ | 6.0 | 16.0+ |
+| **1.1.x** | 13.0+ | 5.0+ | 15.0+ |
+
+> **Concurrency (2.0.0):** `LinkIO` is `@MainActor`-isolated and `DeepLinkData` /
+> `LinkIOConfig` are `Sendable`, so the SDK builds cleanly under Swift 6 strict concurrency.
+> The public API is unchanged — call it from the main thread as before (AppDelegate/SceneDelegate
+> and SwiftUI view callbacks already run there). This release requires a Swift 6 toolchain
+> (Xcode 16+); stay on the 1.1.x line for older toolchains.
 
 ## 📄 License
 
