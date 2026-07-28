@@ -96,6 +96,13 @@ public class LinkIO {
                 return
             }
 
+            // An empty / url-less 200 (e.g. `{}`) means "no pending link" — not an error.
+            // Try the deviceId-based endpoint instead of logging a decode failure.
+            if Self.isEmptyPendingLink(data) {
+                self.checkPendingLinkByDeviceId()
+                return
+            }
+
             do {
                 let decoder = JSONDecoder()
                 let deepLink = try decoder.decode(DeepLinkData.self, from: data)
@@ -113,6 +120,15 @@ public class LinkIO {
                 self.checkPendingLinkByDeviceId()
             }
         }.resume()
+    }
+
+    /// True when the pending-link response carries no deep link (empty object or missing
+    /// `url`), which the backend returns as HTTP 200 `{}` when nothing is waiting.
+    private static func isEmptyPendingLink(_ data: Data) -> Bool {
+        guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return false
+        }
+        return object["url"] == nil
     }
 
     private func checkPendingLinkByDeviceId() {
@@ -133,6 +149,9 @@ public class LinkIO {
                   httpResponse.statusCode == 200 else {
                 return
             }
+
+            // Empty / url-less 200 means there is genuinely no pending link — stop silently.
+            if Self.isEmptyPendingLink(data) { return }
 
             do {
                 let decoder = JSONDecoder()

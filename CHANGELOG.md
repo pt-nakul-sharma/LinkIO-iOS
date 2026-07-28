@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] - 2026-07-28
+
+### Fixed
+
+- Handle empty (`{}`) pending-link responses without logging a decode error
+
 ## [1.2.0] - 2026-02-03
 
 ### Added
